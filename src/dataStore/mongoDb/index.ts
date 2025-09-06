@@ -2,9 +2,16 @@ import {User, Post, Like, Comment} from "../../types";
 import {DataStore} from "../index";
 import mongoose from 'mongoose';
 import 'dotenv/config'
+import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
 
 
 export class mongoDb implements DataStore {
+    private userDbDao: mongoUserDao
+
+    constructor() {
+        this.userDbDao = new mongoUserDao()
+    }
+
     //create database
     public async createDataBase() {
         if (!process.env.MONGODB_URI) {
@@ -15,11 +22,11 @@ export class mongoDb implements DataStore {
     }
 
     createUser(user: User): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.userDbDao.createUser(user)
     }
 
     getUserByEmail(userEmail: string): Promise<User | undefined> {
-        throw new Error("Method not implemented.");
+        return this.userDbDao.getUserByEmail(userEmail)
     }
 
     updateUser(user: User): Promise<void> {

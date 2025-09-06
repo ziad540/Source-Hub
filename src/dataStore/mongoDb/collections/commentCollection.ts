@@ -1,4 +1,5 @@
-import mongoose from 'mongoose'
+import mongoose, {Model} from 'mongoose'
+import {Comment} from "../../../types";
 
 const {Schema} = mongoose
 const commentSchema = new Schema({
@@ -16,6 +17,9 @@ const commentSchema = new Schema({
     timestamps: true
 });
 
+interface CommentDoc extends Comment, Document {
+}
 
-const commentDb = mongoose.model('Comment', commentSchema);
+const commentDb: Model<CommentDoc> = mongoose.model<CommentDoc>("Comment", commentSchema);
+
 export default commentDb;

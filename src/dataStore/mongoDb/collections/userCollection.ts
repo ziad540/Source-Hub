@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, {Model} from "mongoose";
+import {User} from "../../../types";
 
 const {Schema} = mongoose;
 const userSchema = new Schema({
@@ -25,5 +26,9 @@ const userSchema = new Schema({
     }
 
 });
-const userDb = mongoose.model('User', userSchema);
+
+interface UserDoc extends User, Document {
+}
+
+const userDb: Model<UserDoc> = mongoose.model<UserDoc>("User", userSchema);
 export default userDb;

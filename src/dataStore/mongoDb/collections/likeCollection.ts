@@ -1,4 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, {Model} from "mongoose";
+import {Like} from "../../../types";
 
 const {Schema} = mongoose;
 
@@ -15,5 +16,8 @@ const likeSchema = new Schema({
     }
 });
 
+interface LikeDoc extends Like, Document {
+}
 
-const likeDb = mongoose.model('Like', likeSchema);
+const likeDb: Model<LikeDoc> = mongoose.model<LikeDoc>('Like', likeSchema);
+export default likeDb;
