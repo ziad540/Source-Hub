@@ -2,6 +2,7 @@ import userDb from "../collections/userCollection";
 import {User} from "../../../types.js";
 import {customError} from "../../../utlis/customError";
 import {hashingValue} from "../../../utlis/hashing";
+import {UserDoc} from "../../../customTypes/mongooseObj";
 
 export class mongoUserDao {
     async createUser(user: User): Promise<void> {
@@ -40,8 +41,38 @@ export class mongoUserDao {
         }
         return userExist;
     }
-    async updateUser(user: User): Promise<void> {
-        
+
+    async updateUser(user: UserDoc, newUserName: string, newEmail: string): Promise<UserDoc> {
+        if (newEmail) {
+            const userExist = await userDb.findOne({email: newEmail});
+            if (userExist && (userExist._id as any).toString() !== (user._id as any).toString()) {
+                throw new customError("Email already exists", 400);
+            }
+        }
+        if (newUserName) {
+            const userNameExist = await userDb.findOne({username: newUserName});
+            if (userNameExist && (userNameExist._id as any).toString() !== (user._id as any).toString()) {
+                throw new customError("Username already exists", 400);
+            }
+        }
+
+        const updateData: Partial<UserDoc> = {};
+        if (newUserName) updateData.username = newUserName;
+        if (newEmail) updateData.email = newEmail;
+
+
+        const userUpdated = await userDb.findOneAndUpdate(
+            {_id: user._id},
+            updateData,
+            {new: true}
+        );
+
+        if (!userUpdated) {
+            throw new customError("User not found", 404);
+        }
+
+        return userUpdated;
+
     }
 
 }

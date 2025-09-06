@@ -3,6 +3,7 @@ import {DataStore} from "../index";
 import mongoose from 'mongoose';
 import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
+import {UserDoc} from "../../customTypes/mongooseObj";
 
 
 export class mongoDb implements DataStore {
@@ -29,8 +30,9 @@ export class mongoDb implements DataStore {
         return this.userDbDao.getUserByEmail(userEmail)
     }
 
-    updateUser(user: User): Promise<void> {
-        throw new Error("Method not implemented.");
+    updateUser(user: UserDoc, newUserName: string, newEmail: string): Promise<UserDoc> {
+        return this.userDbDao.updateUser(user, newUserName, newEmail)
+
     }
 
     createPost(post: Post): Promise<void> {
