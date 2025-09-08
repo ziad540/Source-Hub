@@ -1,7 +1,10 @@
 import {mongoDb} from "../../dataStore/mongoDb";
 import {User} from "../../types";
 import {NextFunction, Request, Response} from "express";
-import userDb from "../../dataStore/mongoDb/collections/userCollection";
+import {LoggedInUserRequest} from "../../customTypes/requestTypes";
+import {generateAccessToken, generateRefreshToken} from "../../utlis/generateTokens";
+import {Types} from "mongoose";
+
 
 export const signupService = (db: mongoDb) => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -48,7 +51,7 @@ export const getUserByEmail = (db: mongoDb) => {
 }
 
 export const updateUser = (db: mongoDb) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: LoggedInUserRequest, res: Response, next: NextFunction) => {
         try {
             const userData = req.loggedInUser?.userData;
             if (!userData) {
@@ -65,5 +68,26 @@ export const updateUser = (db: mongoDb) => {
         }
 
 
+    }
+}
+
+export const signInService = (db: mongoDb) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {email, password} = req.body;
+            if (!email || !password) {
+                return res.status(400).json({error: "please fill all fields"});
+            }
+            const userExist = await db.signInUser(email, password);
+            const accessToken = generateAccessToken(email, userExist._id as Types.ObjectId);
+            const refreshToken = generateRefreshToken(email, userExist._id as Types.ObjectId);
+            return res.status(200).json({
+                message: "User logged in",
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+            })
+        } catch (error) {
+            next(error);
+        }
     }
 }

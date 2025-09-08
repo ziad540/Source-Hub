@@ -1,7 +1,7 @@
 import userDb from "../collections/userCollection";
 import {User} from "../../../types.js";
 import {customError} from "../../../utlis/customError";
-import {hashingValue} from "../../../utlis/hashing";
+import {comparePassword, hashingValue} from "../../../utlis/hashing";
 import {UserDoc} from "../../../customTypes/mongooseObj";
 
 export class mongoUserDao {
@@ -73,6 +73,20 @@ export class mongoUserDao {
 
         return userUpdated;
 
+    }
+
+    async signInUser(userEmail: string, password: string): Promise<UserDoc> {
+        const userExist = await userDb.findOne({
+            email: userEmail,
+        });
+        if (!userExist) {
+            throw new customError('Email or Password not correct', 400);
+        }
+        const passwordMatched = await comparePassword(password, userExist.password);
+        if (!passwordMatched) {
+            throw new customError("Email or Password do not match", 400);
+        }
+        return userExist;
     }
 
 }

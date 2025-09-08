@@ -4,8 +4,10 @@ import userDb from "../dataStore/mongoDb/collections/userCollection";
 import {customError} from "../utlis/customError";
 import {NextFunction, Response, Request} from "express";
 import blackListTokens from "../dataStore/mongoDb/collections/blackListTokenCollection";
+import {LoggedInUserRequest} from "../customTypes/requestTypes";
 
-export const authenticationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+
+export const authenticationMiddleware = async (req: LoggedInUserRequest, res: Response, next: NextFunction) => {
     // get token from headers
     const accesstoken = req.headers['accesstoken'] as string | undefined;
 

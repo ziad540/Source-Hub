@@ -4,13 +4,16 @@ import mongoose from 'mongoose';
 import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
 import {UserDoc} from "../../customTypes/mongooseObj";
+import {mongoPostDao} from "./ MongoDao/ MongoPostDao";
 
 
 export class mongoDb implements DataStore {
     private userDbDao: mongoUserDao
+    private postDbDao: mongoPostDao
 
     constructor() {
         this.userDbDao = new mongoUserDao()
+        this.postDbDao = new mongoPostDao()
     }
 
     //create database
@@ -35,12 +38,16 @@ export class mongoDb implements DataStore {
 
     }
 
-    createPost(post: Post): Promise<void> {
-        throw new Error("Method not implemented.");
+    signInUser(userEmail: string, password: string): Promise<UserDoc> {
+        return this.userDbDao.signInUser(userEmail, password)
     }
 
-    listPosts(): Promise<Post[]> {
-        throw new Error("Method not implemented.");
+    createPost(post: Post): Promise<void> {
+        return this.postDbDao.createPost(post)
+    }
+
+    listPosts(user: UserDoc): Promise<Post[]> {
+        return this.postDbDao.listPosts(user)
     }
 
     getPostById(id: string): Promise<Post | undefined> {
