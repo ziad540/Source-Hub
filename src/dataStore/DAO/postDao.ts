@@ -1,12 +1,13 @@
 import {Post} from "../../types";
-import {UserDoc} from "../../customTypes/mongooseObj";
+import {PostDoc, UserDoc} from "../../customTypes/mongooseObj";
+import {Types} from "mongoose";
 
 export interface PostDao {
     createPost(post: Post): Promise<void>,
 
-    listPosts(user:UserDoc): Promise<Post[]>,
+    listPosts(userId: Types.ObjectId): Promise<Post[]>,
 
-    getPostById(id: string): Promise<Post | undefined>
+    getPostById(id: Types.ObjectId): Promise<Post | undefined>
 
     deletePost(id: string): Promise<void>
 }

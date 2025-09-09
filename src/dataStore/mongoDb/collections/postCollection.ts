@@ -23,5 +23,5 @@ const postSchema = new Schema({
 interface PostDoc extends Post, Document {
 }
 
-const postDb: Model<PostDoc> = mongoose.model<PostDoc>("Post", postSchema);
+const postDb: Model<Post> = mongoose.model<Post>("Post", postSchema);
 export default postDb;

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, {Document, Types} from 'mongoose';
 
 export interface User {
     username: string;
@@ -8,19 +8,23 @@ export interface User {
     lastname: string;
 }
 
-export interface Post extends Document {
+export interface Post {
+    _id: Types.ObjectId;
     title: string;
     url: string;
-    userId: mongoose.Types.ObjectId;
+    userId: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-export interface Like extends Document {
-    userId: mongoose.Types.ObjectId;
-    postId: mongoose.Types.ObjectId;
+export interface Like {
+    userId: Types.ObjectId;
+    postId: Types.ObjectId;
 }
 
-export interface Comment extends Document {
-    userId: mongoose.Types.ObjectId;
-    postId: mongoose.Types.ObjectId;
-    postedAt: number;
+export interface Comment {
+    userId: Types.ObjectId;
+    postId: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
 }

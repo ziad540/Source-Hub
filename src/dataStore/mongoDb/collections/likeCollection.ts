@@ -16,8 +16,5 @@ const likeSchema = new Schema({
     }
 });
 
-interface LikeDoc extends Like, Document {
-}
-
-const likeDb: Model<LikeDoc> = mongoose.model<LikeDoc>('Like', likeSchema);
+const likeDb: Model<Like> = mongoose.model<Like>('Like', likeSchema);
 export default likeDb;

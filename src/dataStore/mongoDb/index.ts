@@ -1,9 +1,9 @@
 import {User, Post, Like, Comment} from "../../types";
 import {DataStore} from "../index";
-import mongoose from 'mongoose';
+import mongoose, {Types} from 'mongoose';
 import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
-import {UserDoc} from "../../customTypes/mongooseObj";
+import {PostDoc, UserDoc} from "../../customTypes/mongooseObj";
 import {mongoPostDao} from "./ MongoDao/ MongoPostDao";
 
 
@@ -46,12 +46,12 @@ export class mongoDb implements DataStore {
         return this.postDbDao.createPost(post)
     }
 
-    listPosts(user: UserDoc): Promise<Post[]> {
-        return this.postDbDao.listPosts(user)
+    listPosts(userId: Types.ObjectId): Promise<Post[]> {
+        return this.postDbDao.listPosts(userId)
     }
 
-    getPostById(id: string): Promise<Post | undefined> {
-        throw new Error("Method not implemented.");
+    getPostById(id: Types.ObjectId): Promise<Post | undefined> {
+        return this.postDbDao.getPostById(id);
     }
 
     deletePost(id: string): Promise<void> {

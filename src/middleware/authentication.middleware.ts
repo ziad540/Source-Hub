@@ -5,6 +5,7 @@ import {customError} from "../utlis/customError";
 import {NextFunction, Response, Request} from "express";
 import blackListTokens from "../dataStore/mongoDb/collections/blackListTokenCollection";
 import {LoggedInUserRequest} from "../customTypes/requestTypes";
+import {Types} from "mongoose";
 
 
 export const authenticationMiddleware = async (req: LoggedInUserRequest, res: Response, next: NextFunction) => {
@@ -16,12 +17,13 @@ export const authenticationMiddleware = async (req: LoggedInUserRequest, res: Re
         throw new customError('Token Not Found', 404);
     }
     // decode token to get data
-    const objUserFromToken = jwt.verify(accesstoken!, process.env.PROFILE_SECRET as string) as JwtPayload & {
-        id: string,
+    console.log(accesstoken);
+    const objUserFromToken = jwt.verify(accesstoken, process.env.JWT_SECRET as string) as JwtPayload & {
+        email: string
+        id: Types.ObjectId,
         jti: string,
         exp: Date,
     };
-
     if (!objUserFromToken.jti) {
         throw new customError('Invalid Token', 404);
     }

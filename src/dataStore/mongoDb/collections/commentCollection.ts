@@ -17,9 +17,7 @@ const commentSchema = new Schema({
     timestamps: true
 });
 
-interface CommentDoc extends Comment, Document {
-}
 
-const commentDb: Model<CommentDoc> = mongoose.model<CommentDoc>("Comment", commentSchema);
+const commentDb: Model<Comment> = mongoose.model<Comment>("Comment", commentSchema);
 
 export default commentDb;
