@@ -1,5 +1,5 @@
 import {Post} from "../../../types";
-import {PostDoc, UserDoc} from "../../../customTypes/mongooseObj";
+import {UserDoc} from "../../../customTypes/mongooseObj";
 import postDb from "../collections/postCollection";
 import {Types} from "mongoose";
 import {customError} from "../../../utlis/customError";

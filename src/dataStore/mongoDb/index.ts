@@ -3,7 +3,7 @@ import {DataStore} from "../index";
 import mongoose, {Types} from 'mongoose';
 import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
-import {PostDoc, UserDoc} from "../../customTypes/mongooseObj";
+import {UserDoc} from "../../customTypes/mongooseObj";
 import {mongoPostDao} from "./ MongoDao/ MongoPostDao";
 
 

@@ -4,6 +4,9 @@ import {NextFunction, Request, Response} from "express";
 import {LoggedInUserRequest} from "../../customTypes/requestTypes";
 import {generateAccessToken, generateRefreshToken} from "../../utlis/generateTokens";
 import {Types} from "mongoose";
+import EmailEventService from "../../utlis/sendingEmail.service";
+
+
 
 
 export const signupService = (db: mongoDb) => {
@@ -23,6 +26,7 @@ export const signupService = (db: mongoDb) => {
                 password
             };
             await db.createUser(newUser);
+            EmailEventService.emit("confirmationEmail", email, "Confirm Email From SourceHub")
             res.status(201).json({message: "User created"});
         } catch (err) {
             next(err);
