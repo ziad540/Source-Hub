@@ -1,8 +1,10 @@
 import {Post} from "../../../types";
-import {UserDoc} from "../../../customTypes/mongooseObj";
 import postDb from "../collections/postCollection";
-import {Types} from "mongoose";
+import mongoose, {Types} from "mongoose";
 import {customError} from "../../../utlis/customError";
+import commentDb from "../collections/commentCollection";
+import likeDb from "../collections/likeCollection";
+
 
 export class mongoPostDao {
 
@@ -37,4 +39,63 @@ export class mongoPostDao {
         }
         return post;
     }
+
+    async deletePost(id: Types.ObjectId): Promise<void> {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        try {
+
+            const postExist = await postDb.findByIdAndDelete(id, {session});
+            if (!postExist) {
+                new customError("post not found", 400);
+            }
+            await commentDb.deleteMany({
+                postId: id,
+            }, {
+                session
+            });
+            await likeDb.deleteMany({
+                postId: id,
+            }, {
+                session
+            })
+            await session.commitTransaction();
+        } catch (error) {
+            await session.abortTransaction();
+            throw new customError("Transaction aborted ❌", 500);
+        } finally {
+            await session.endSession();
+        }
+
+    }
+
+    async editPost(userId: Types.ObjectId, id: Types.ObjectId, newPost: Partial<Post>): Promise<void> {
+        const postObj = await postDb.findById(id);
+        if (!postObj) {
+            throw new customError("Id not correct", 400)
+        }
+        if (!postObj.userId.equals(userId)) {
+            throw new customError("user not authorized", 403);
+        }
+        const allowedFields: Array<keyof Post> = ["title", "url"];
+        const updateData: any = {};
+        for (const field of allowedFields) {
+            if (newPost[field] !== undefined) {
+                if (!updateData.$set) updateData.$set = {};
+                updateData.$set[field] = newPost[field];
+            }
+        }
+        if (newPost.tags && newPost.tags.length > 0) {
+            updateData.$addToSet = {tags: {$each: newPost.tags}};
+        }
+
+        const postUpdated = await postDb.findByIdAndUpdate(id, updateData, {
+            new: true
+        });
+
+        if (!postUpdated) {
+            throw new customError("post not found", 400);
+        }
+    }
+
 }

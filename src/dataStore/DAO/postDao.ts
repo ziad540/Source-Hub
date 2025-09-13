@@ -1,5 +1,5 @@
 import {Post} from "../../types";
-import {PostDoc, UserDoc} from "../../customTypes/mongooseObj";
+
 import {Types} from "mongoose";
 
 export interface PostDao {
@@ -9,5 +9,7 @@ export interface PostDao {
 
     getPostById(id: Types.ObjectId): Promise<Post | undefined>
 
-    deletePost(id: string): Promise<void>
+    deletePost(id: Types.ObjectId): Promise<void>
+
+    editPost(userId: Types.ObjectId, id: Types.ObjectId, newPost: Partial<Post>): Promise<void>
 }

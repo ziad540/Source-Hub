@@ -65,11 +65,55 @@ export const listPosts = (db: mongoDb) => {
 
             const posts = await db.listPosts(userId);
             return res.status(200).json({
-                Posts:posts,
+                Posts: posts,
             });
         } catch (error) {
             next(error);
         }
 
+    }
+}
+
+export const deletePost = (db: mongoDb) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {postId} = req.body;
+            if (!postId) {
+                return res.status(400).json({
+                    error: "please fill all the required fields"
+                });
+            }
+            await db.deletePost(postId as Types.ObjectId);
+            return res.status(200).json({
+                message: "Post successfully deleted"
+            })
+        } catch (error) {
+            next(error);
+        }
+
+    }
+}
+
+export const editPost = (db: mongoDb) => {
+    return async (req: LoggedInUserRequest, res: Response, next: NextFunction) => {
+        try {
+            const userData = req.loggedInUser?.userData;
+            if (!userData) {
+                return res.status(401).json({message: "Not authenticated"});
+            }
+            const userId: Types.ObjectId = userData._id as Types.ObjectId;
+            const {postId, title, url, tags} = req.body;
+            if (!title || !url || tags.length == 0) {
+                return res.status(400).json({error: "please fill at least one field"});
+            }
+            const newPost: Partial<Post> = {
+                title,
+                url,
+                tags
+            }
+            await db.editPost(userId,postId, newPost)
+        } catch (error) {
+            next(error);
+        }
     }
 }

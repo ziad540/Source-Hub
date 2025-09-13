@@ -16,6 +16,7 @@ export class mongoDb implements DataStore {
         this.postDbDao = new mongoPostDao()
     }
 
+
     //create database
     public async createDataBase() {
         if (!process.env.MONGODB_URI) {
@@ -54,8 +55,12 @@ export class mongoDb implements DataStore {
         return this.postDbDao.getPostById(id);
     }
 
-    deletePost(id: string): Promise<void> {
-        throw new Error("Method not implemented.");
+    deletePost(id: Types.ObjectId): Promise<void> {
+        return this.postDbDao.deletePost(id);
+    }
+
+    editPost(userId: Types.ObjectId, id: Types.ObjectId, newPost: Partial<Post>): Promise<void> {
+        return this.postDbDao.editPost(userId, id, newPost)
     }
 
     createLike(like: Like): Promise<void> {
