@@ -12,4 +12,8 @@ export interface PostDao {
     deletePost(id: Types.ObjectId): Promise<void>
 
     editPost(userId: Types.ObjectId, id: Types.ObjectId, newPost: Partial<Post>): Promise<void>
+
+    searchPosts(keyword: String): Promise<Post[]>
+
+    filterPostsByTag(tag: String): Promise<Post[]>
 }

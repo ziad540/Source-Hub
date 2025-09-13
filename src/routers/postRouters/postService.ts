@@ -111,7 +111,41 @@ export const editPost = (db: mongoDb) => {
                 url,
                 tags
             }
-            await db.editPost(userId,postId, newPost)
+            await db.editPost(userId, postId, newPost)
+        } catch (error) {
+            next(error);
+        }
+    }
+}
+
+export const searchPosts = (db: mongoDb) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {keyword} = req.body;
+            if (!keyword) {
+                return res.status(400).json({error: "please fill all the required fields"});
+            }
+            const postsFound = await db.searchPosts(keyword);
+            return res.status(200).json({
+                message: "Post successfully found",
+                postsFound: postsFound
+            });
+        } catch (error) {
+            next(error);
+        }
+
+    }
+}
+
+export const filterByTag = (db: mongoDb) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {tag} = req.body;
+            const postsFound = await db.filterPostsByTag(tag);
+            return res.status(200).json({
+                message: "Post successfully found",
+                postsFound: postsFound
+            })
         } catch (error) {
             next(error);
         }

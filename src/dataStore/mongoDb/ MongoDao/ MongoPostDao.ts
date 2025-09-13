@@ -98,4 +98,25 @@ export class mongoPostDao {
         }
     }
 
+    async searchPosts(keyword: string): Promise<Post[]> {
+        const posts = await postDb.find(
+            {$text: {$search: keyword}},
+            {score: {$meta: "textScore"}}
+        ).sort({score: {$meta: "textScore"}}).select("title url");
+        if (posts.length <= 0) {
+            throw new customError("No posts found", 403);
+        }
+        return posts;
+    }
+
+    async filterByTag(tag: string): Promise<Post[]> {
+        const postsFound = await postDb.find({
+            tags: tag
+        }).select("title url");
+        if (postsFound.length <= 0) {
+            throw new customError("No posts found", 403);
+        }
+        return postsFound;
+    }
+
 }

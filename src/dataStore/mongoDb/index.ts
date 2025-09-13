@@ -1,6 +1,6 @@
 import {User, Post, Like, Comment} from "../../types";
 import {DataStore} from "../index";
-import mongoose, {Types} from 'mongoose';
+import mongoose, {Error, Promise, Types} from 'mongoose';
 import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
 import {UserDoc} from "../../customTypes/mongooseObj";
@@ -63,6 +63,14 @@ export class mongoDb implements DataStore {
         return this.postDbDao.editPost(userId, id, newPost)
     }
 
+    searchPosts(keyword: string): Promise<Post[]> {
+        return this.postDbDao.searchPosts(keyword)
+    }
+
+    filterPostsByTag(tag: string): Promise<Post[]> {
+        return this.postDbDao.filterByTag(tag)
+    }
+
     createLike(like: Like): Promise<void> {
         throw new Error("Method not implemented.");
     }
@@ -78,5 +86,6 @@ export class mongoDb implements DataStore {
     listComments(postId: string): Promise<Comment[]> {
         throw new Error("Method not implemented.");
     }
+
 
 }

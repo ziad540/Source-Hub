@@ -23,9 +23,9 @@ const postSchema = new Schema({
 }, {
     timestamps: true
 });
-
-interface PostDoc extends Post, Document {
-}
-
+postSchema.index({
+    title: "text",
+    tags:"text"
+})
 const postDb: Model<Post> = mongoose.model<Post>("Post", postSchema);
 export default postDb;
