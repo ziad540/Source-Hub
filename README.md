@@ -148,7 +148,8 @@ Source-Hub/
 
 ```bash
 # Start development server with hot reloading
-npm run dev
+npx nodemon
+
 
 # Build TypeScript to JavaScript
 npm run build
