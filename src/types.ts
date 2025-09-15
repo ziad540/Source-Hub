@@ -25,8 +25,7 @@ export interface Like {
 }
 
 export interface Comment {
+    title: string;
     userId: Types.ObjectId;
     postId: Types.ObjectId;
-    createdAt: Date;
-    updatedAt: Date;
 }

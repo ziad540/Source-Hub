@@ -19,9 +19,9 @@ export class mongoLikeDao {
             await session.commitTransaction();
         } catch (err: any) {
             await session.abortTransaction();
-            if (err.code === 11000) {
-                throw new customError("Already liked", 400)
-            }
+                if (err.code === 11000) {
+                    throw new customError("Already liked", 400)
+                }
             throw new customError("Server Error", 500)
         } finally {
             await session.endSession();

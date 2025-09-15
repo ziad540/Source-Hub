@@ -3,6 +3,10 @@ import {Comment} from "../../../types";
 
 const {Schema} = mongoose
 const commentSchema = new Schema({
+    title: {
+        type: String,
+        required: true,
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -17,7 +21,9 @@ const commentSchema = new Schema({
     timestamps: true
 });
 
-
+commentSchema.index({userId: 1, postId: 1}, {
+    unique: true,
+});
 const commentDb: Model<Comment> = mongoose.model<Comment>("Comment", commentSchema);
 
 export default commentDb;
