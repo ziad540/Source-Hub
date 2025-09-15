@@ -5,6 +5,7 @@ import {userController} from "./routers/userRouters/usercontroller";
 import {errorHandlingMiddleware} from "./middleware/errorHandling.middleware";
 import {postController} from "./routers/postRouters/postController";
 import {likeController} from "./routers/likeRouters/likeController";
+import { commentController } from './routers/commentRouters/commentController';
 
 
 (async () => {
@@ -15,6 +16,7 @@ import {likeController} from "./routers/likeRouters/likeController";
     app.use('/user', userController(db));
     app.use('/post', postController(db));
     app.use('/like',likeController(db));
+    app.use('/comment',commentController(db));
 
     app.use(errorHandlingMiddleware);
 

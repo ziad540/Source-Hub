@@ -78,6 +78,10 @@ export class mongoDb implements DataStore {
         return this.likeDbDao.createLike(like)
     }
 
+    deleteLike(like: Like): Promise<void> {
+        return this.likeDbDao.deleteLike(like)
+    }
+
     createComment(comment: Comment): Promise<void> {
         throw new Error("Method not implemented.");
     }
