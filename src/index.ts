@@ -4,6 +4,7 @@ import {mongoDb} from "./dataStore/mongoDb";
 import {userController} from "./routers/userRouters/usercontroller";
 import {errorHandlingMiddleware} from "./middleware/errorHandling.middleware";
 import {postController} from "./routers/postRouters/postController";
+import {likeController} from "./routers/likeRouters/likeController";
 
 
 (async () => {
@@ -11,8 +12,9 @@ import {postController} from "./routers/postRouters/postController";
     const db = await new mongoDb().createDataBase();
     console.log("DataBase connected successfully.");
     app.use(express.json());
-    app.use('/user', userController(db))
+    app.use('/user', userController(db));
     app.use('/post', postController(db));
+    app.use('/like',likeController(db));
 
     app.use(errorHandlingMiddleware);
 

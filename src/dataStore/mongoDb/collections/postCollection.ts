@@ -19,13 +19,21 @@ const postSchema = new Schema({
     tags: {
         type: [String],
         required: true,
+    },
+    likesNumber: {
+        type: Number,
+        default: 0,
+    },
+    commentsNumber: {
+        type: Number,
+        default: 0,
     }
 }, {
     timestamps: true
 });
 postSchema.index({
     title: "text",
-    tags:"text"
+    tags: "text"
 })
 const postDb: Model<Post> = mongoose.model<Post>("Post", postSchema);
 export default postDb;

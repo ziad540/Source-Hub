@@ -5,15 +5,18 @@ import 'dotenv/config'
 import {mongoUserDao} from "./ MongoDao/ MongoUserDao";
 import {UserDoc} from "../../customTypes/mongooseObj";
 import {mongoPostDao} from "./ MongoDao/ MongoPostDao";
+import {mongoLikeDao} from "./ MongoDao/ MongoLikeDao";
 
 
 export class mongoDb implements DataStore {
     private userDbDao: mongoUserDao
     private postDbDao: mongoPostDao
+    private likeDbDao: mongoLikeDao
 
     constructor() {
         this.userDbDao = new mongoUserDao()
         this.postDbDao = new mongoPostDao()
+        this.likeDbDao = new mongoLikeDao()
     }
 
 
@@ -72,7 +75,7 @@ export class mongoDb implements DataStore {
     }
 
     createLike(like: Like): Promise<void> {
-        throw new Error("Method not implemented.");
+        return this.likeDbDao.createLike(like)
     }
 
     createComment(comment: Comment): Promise<void> {
