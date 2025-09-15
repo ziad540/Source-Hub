@@ -196,6 +196,7 @@ For support and questions:
 ## 🚧 Roadmap
 
 - [ ] Frontend web interface
+- [ ] Validation middleware
 - [ ] Advanced search filters
 - [ ] Resource categories and subcategories
 - [ ] User reputation system
