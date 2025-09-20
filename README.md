@@ -12,6 +12,7 @@ Source-Hub is a modern web application that serves as a centralized hub for prog
 - **Interactive Engagement**: Like and comment on resources to build community discussions
 - **Advanced Search**: Powerful search functionality to find exactly what you need
 - **Tag-based Organization**: Organize resources with custom tags for easy categorization
+- **Input Validation**: Comprehensive request validation using Zod schemas with detailed error messages
 
 ## 🛠️ Tech Stack
 
@@ -19,6 +20,7 @@ Source-Hub is a modern web application that serves as a centralized hub for prog
 - **Language**: TypeScript
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: JWT (JSON Web Tokens)
+- **Validation**: Zod for schema validation and type safety
 - **Security**: bcrypt for password hashing
 - **Development**: Nodemon for hot reloading
 
@@ -115,6 +117,184 @@ The server will start on `http://localhost:3000`
 | GET | `/comment/list` | Get comments | No |
 | DELETE | `/comment/delete` | Delete a comment | Yes |
 
+## 🛡️ Validation Middleware with Zod
+
+Source-Hub implements a robust validation system using **Zod** for type-safe request validation. The validation middleware ensures data integrity and provides detailed error messages for invalid requests.
+
+### Overview
+
+The validation system consists of:
+- **Zod Schemas**: Define validation rules for different endpoints
+- **Validation Middleware**: Processes requests and validates against schemas
+- **Custom Error Handling**: Provides structured error responses
+- **TypeScript Integration**: Type-safe validation with automatic type inference
+
+### How It Works
+
+#### 1. Schema Definition
+
+Validators are defined using Zod schemas in the `src/validator/` directory:
+
+```typescript
+// Example: User Sign Up Validator
+export const signUpValidator = {
+    body: z.strictObject({
+        email: z.email(),
+        username: z.string().nonoptional(),
+        password: z.string().regex(/^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8}$/).nonoptional(),
+        firstname: z.string().min(2, "Too short!").nonoptional(),
+        lastname: z.string().min(2, "Too short!").nonoptional(),
+    })
+}
+```
+
+#### 2. Middleware Usage
+
+Apply validation middleware to routes:
+
+```typescript
+import { validationMiddleware } from '../middleware/validation.middleware';
+import { signUpValidator } from '../validator/user.validator';
+
+// Apply validation to route
+router.post('/signUp', validationMiddleware(signUpValidator), signUpController);
+```
+
+#### 3. Type Safety
+
+Automatic type inference from Zod schemas:
+
+```typescript
+// Types are automatically generated from validators
+export type signUpBody = z.infer<typeof signUpValidator.body>
+export type createPostBody = z.infer<typeof createPostValidator.body>
+```
+
+### Available Validators
+
+#### User Validators (`user.validator.ts`)
+- **signUpValidator**: Email, username, password (with regex), firstname, lastname
+- **signInValidator**: Email and password
+- **getUserByEmailValidator**: Email lookup
+- **updateUserValidator**: Optional username and email updates
+
+#### Post Validators (`post.validator.ts`)
+- **createPostValidator**: Title and URL (must be valid URL)
+- **getPostByIdValidator**: MongoDB ObjectId (24 characters)
+- **editPostValidator**: Post ID, optional title, URL, and tags array
+- **searchPostValidator**: Search keyword
+- **filterPostValidator**: Tag filter
+
+#### Like Validators (`like.validator.ts`)
+- **createLikeValidator**: Post ID (24 characters)
+- **deleteLikeValidator**: Post ID (24 characters)
+
+#### Comment Validators (`comment.validator.ts`)
+- **createCommentValidator**: Title and Post ID
+- **deleteCommentValidator**: Comment ID (24 characters)
+- **listCommentsValidator**: Post ID (24 characters)
+
+### Validation Features
+
+#### Request Validation
+The middleware validates multiple parts of the request:
+- **Body**: Request payload validation
+- **Params**: URL parameter validation
+- **Query**: Query string validation
+- **Headers**: Header validation (when specified)
+
+#### Error Handling
+Validation errors return structured responses:
+
+```json
+{
+    "success": false,
+    "type": "ValidationError",
+    "message": "Validation failed: email - Invalid email, password - String must contain at least 8 character(s)",
+    "statusCode": 400,
+    "errors": [
+        {
+            "field": "body.email",
+            "message": "Invalid email",
+            "code": "validation_failed"
+        },
+        {
+            "field": "body.password",
+            "message": "String must contain at least 8 character(s)",
+            "code": "validation_failed"
+        }
+    ],
+    "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
+### Common Validation Rules
+
+#### Password Requirements
+```typescript
+// Strong password: 2+ uppercase, 1+ special char, 2+ numbers, 3+ lowercase, exactly 8 chars
+z.string().regex(/^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8}$/)
+```
+
+#### MongoDB ObjectId
+```typescript
+// Validates 24-character hex string (MongoDB ObjectId format)
+z.string().length(24)
+```
+
+#### Email Validation
+```typescript
+// Built-in email validation
+z.email()
+```
+
+#### URL Validation
+```typescript
+// Validates proper URL format
+z.url()
+```
+
+### Creating Custom Validators
+
+To add validation for new endpoints:
+
+1. **Create validator schema**:
+```typescript
+// src/validator/example.validator.ts
+import * as z from "zod";
+
+export const exampleValidator = {
+    body: z.strictObject({
+        name: z.string().min(1).max(100),
+        age: z.number().min(0).max(120),
+        tags: z.array(z.string()).optional()
+    }),
+    params: z.strictObject({
+        id: z.string().length(24)
+    })
+}
+```
+
+2. **Add type definitions**:
+```typescript
+// src/customTypes/validationTypes.ts
+export type exampleBody = z.infer<typeof exampleValidator.body>
+```
+
+3. **Apply to routes**:
+```typescript
+router.post('/example/:id', validationMiddleware(exampleValidator), exampleController);
+```
+
+### Best Practices
+
+- **Use `z.strictObject()`** to prevent additional properties
+- **Use `.nonoptional()`** for required fields to be explicit
+- **Validate MongoDB ObjectIds** with `.length(24)` for proper format
+- **Use descriptive error messages** with `.min()`, `.max()`, etc.
+- **Group related validators** in the same file
+- **Export type definitions** for TypeScript integration
+
 ## 🏗️ Project Structure
 
 ```
@@ -123,19 +303,29 @@ Source-Hub/
 │   ├── customTypes/          # TypeScript type definitions
 │   │   ├── express.d.ts      # Express type extensions
 │   │   ├── mongooseObj.ts    # Mongoose object types
-│   │   └── requestTypes.ts   # Request/Response types
+│   │   ├── requestTypes.ts   # Request/Response types
+│   │   └── validationTypes.ts # Zod validation type definitions
 │   ├── dataStore/            # Database layer
 │   │   ├── DAO/              # Data Access Objects
 │   │   ├── mongoDb/          # MongoDB connection and models
 │   │   └── index.ts          # Database exports
 │   ├── middleware/           # Express middleware
 │   │   ├── authentication.middleware.ts
-│   │   └── errorHandling.middleware.ts
+│   │   ├── errorHandling.middleware.ts
+│   │   └── validation.middleware.ts
 │   ├── routers/              # API route handlers
 │   │   ├── commentRouters/   # Comment-related routes
 │   │   ├── likeRouters/      # Like-related routes
 │   │   ├── postRouters/      # Post/Resource routes
 │   │   └── userRouters/      # User authentication routes
+│   ├── utlis/                # Utility functions
+│   │   ├── customError.ts    # Custom error classes
+│   │   └── validationError.ts # Validation error handling
+│   ├── validator/            # Zod validation schemas
+│   │   ├── comment.validator.ts
+│   │   ├── like.validator.ts
+│   │   ├── post.validator.ts
+│   │   └── user.validator.ts
 │   ├── types.ts              # Main type definitions
 │   └── index.ts              # Application entry point
 ├── .env                      # Environment variables
@@ -197,7 +387,7 @@ For support and questions:
 ## 🚧 Roadmap
 
 - [ ] Frontend web interface
-- [ ] Validation middleware
+- [x] Validation middleware
 - [ ] Advanced search filters
 - [ ] Resource categories and subcategories
 - [ ] User reputation system

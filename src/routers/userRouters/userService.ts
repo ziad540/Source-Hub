@@ -5,14 +5,13 @@ import {LoggedInUserRequest} from "../../customTypes/requestTypes";
 import {generateAccessToken, generateRefreshToken} from "../../utlis/generateTokens";
 import {Types} from "mongoose";
 import EmailEventService from "../../utlis/sendingEmail.service";
-
-
+import {getUserByEmailBody, signInBody, signUpBody, updateUserBody} from "../../customTypes/validaionTypes";
 
 
 export const signupService = (db: mongoDb) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {email, username, firstname, lastname, password} = req.body;
+            const {email, username, firstname, lastname, password}: signUpBody = req.body;
             if (!email || !username || !firstname || !lastname || !password) {
                 return res.status(400).json({
                     error: "please fill all fields"
@@ -38,7 +37,7 @@ export const signupService = (db: mongoDb) => {
 export const getUserByEmail = (db: mongoDb) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {email} = req.body;
+            const {email}: getUserByEmailBody = req.body;
             if (!email) {
                 return res.status(400).json({error: "please enter a email"});
             }
@@ -61,7 +60,7 @@ export const updateUser = (db: mongoDb) => {
             if (!userData) {
                 return res.status(401).json({message: "Not authenticated"});
             }
-            const {newUserName, newEmail} = req.body;
+            const {newUserName, newEmail}: updateUserBody = req.body;
             if (!newUserName && !newEmail) {
                 return res.status(400).json({error: "please provide at least one field"});
             }
@@ -78,7 +77,7 @@ export const updateUser = (db: mongoDb) => {
 export const signInService = (db: mongoDb) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {email, password} = req.body;
+            const {email, password}: signInBody = req.body;
             if (!email || !password) {
                 return res.status(400).json({error: "please fill all fields"});
             }

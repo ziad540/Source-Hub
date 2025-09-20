@@ -3,6 +3,7 @@ import {NextFunction, Response} from "express";
 import {Like} from "../../types";
 import {LoggedInUserRequest} from "../../customTypes/requestTypes";
 import {Types} from "mongoose";
+import {createLikeBody, deleteLikeBody} from "../../customTypes/validaionTypes";
 
 export const createLike = (db: mongoDb) => {
     return async (req: LoggedInUserRequest, res: Response, next: NextFunction) => {
@@ -12,14 +13,9 @@ export const createLike = (db: mongoDb) => {
                 return res.status(401).json({message: "Not authenticated"});
             }
             const userId: Types.ObjectId = userData._id as Types.ObjectId;
-            const {postId} = req.body;
-            if (!postId) {
-                return res.status(400).json({
-                    error: 'Missing postId'
-                })
-            }
+            const {postId}: createLikeBody = req.body;
             const newLike: Like = {
-                postId,
+                postId: new Types.ObjectId(postId),
                 userId
             }
             await db.createLike(newLike);
@@ -40,14 +36,9 @@ export const deleteLike = (db: mongoDb) => {
                 return res.status(401).json({message: "Not authenticated"});
             }
             const userId: Types.ObjectId = userData._id as Types.ObjectId;
-            const {postId} = req.body;
-            if (!postId) {
-                return res.status(400).json({
-                    error: 'Missing postId'
-                })
-            }
+            const {postId}: deleteLikeBody = req.body;
             const likeToDelete: Like = {
-                postId,
+                postId: new Types.ObjectId(postId),
                 userId
             }
             await db.deleteLike(likeToDelete);

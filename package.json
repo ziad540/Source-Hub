@@ -28,7 +28,8 @@
     "mongoose": "^8.18.0",
     "nodemailer": "^7.0.6",
     "typescript": "^5.9.2",
-    "uniqid": "^5.4.0"
+    "uniqid": "^5.4.0",
+    "zod": "^4.1.9"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",

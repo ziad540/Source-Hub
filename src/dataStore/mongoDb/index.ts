@@ -37,7 +37,7 @@ export class mongoDb implements DataStore {
         return this.userDbDao.getUserByEmail(userEmail)
     }
 
-    updateUser(user: UserDoc, newUserName: string, newEmail: string): Promise<UserDoc> {
+    updateUser(user: UserDoc, newUserName: string | undefined, newEmail: string | undefined): Promise<UserDoc> {
         return this.userDbDao.updateUser(user, newUserName, newEmail)
 
     }

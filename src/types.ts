@@ -15,7 +15,7 @@ export interface Post {
     userId: Types.ObjectId;
     createdAt: Date;
     updatedAt: Date;
-    tags: [string];
+    tags: string[];
 
 }
 

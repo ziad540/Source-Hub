@@ -42,7 +42,7 @@ export class mongoUserDao {
         return userExist;
     }
 
-    async updateUser(user: UserDoc, newUserName: string, newEmail: string): Promise<UserDoc> {
+    async updateUser(user: UserDoc, newUserName: string | undefined, newEmail: string | undefined): Promise<UserDoc> {
         if (newEmail) {
             const userExist = await userDb.findOne({email: newEmail});
             if (userExist && (userExist._id as any).toString() !== (user._id as any).toString()) {

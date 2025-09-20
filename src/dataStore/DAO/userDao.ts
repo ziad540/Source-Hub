@@ -6,7 +6,7 @@ export interface UserDao {
 
     getUserByEmail(userEmail: string): Promise<User | undefined>
 
-    updateUser(user: UserDoc, newUserName: string, newEmail: string): Promise<UserDoc>,
+    updateUser(user: UserDoc, newUserName: string | undefined, newEmail: string | undefined): Promise<UserDoc>,
 
     signInUser(userEmail: string, password: string): Promise<UserDoc>,
 }

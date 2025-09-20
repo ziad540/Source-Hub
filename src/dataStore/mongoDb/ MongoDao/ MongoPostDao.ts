@@ -31,11 +31,12 @@ export class mongoPostDao {
     }
 
     async getPostById(id: Types.ObjectId): Promise<Post | undefined> {
+        console.log("id", id)
         const post = await postDb.findOne({
             _id: id,
         })
         if (!post) {
-            throw new customError("Id not correct", 400)
+            throw new customError("Post not found", 400)
         }
         return post;
     }
